@@ -14,7 +14,7 @@ const Cons *cons_get_left(const Cons *);
 const Cons *cons_get_right(const Cons *);
 bool cons_is_leaf(const Cons *);
 bool cons_is_tuple(const Cons *);
-void cons_foreach(const Cons *, cons_apply a);
+void cons_pre_order(const Cons *, cons_apply a);
 void cons_free(Cons *);
 
 #endif

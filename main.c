@@ -11,6 +11,8 @@ void cons_print_int(const Cons *self) {
 
 int main() {
 	const int n[] = { 5, 4, 3, 7 };
+	// construct the new tree
+	// Cons (Cons (5, 4), (Cons (3, 7)))
 	Cons *c = cons_new_tuple(
 		cons_new_tuple(
 			cons_new_leaf(void_cast(&n[0])),
@@ -19,6 +21,7 @@ int main() {
 			cons_new_leaf(void_cast(&n[2])),
 			cons_new_leaf(void_cast(&n[3]))));
 
-	cons_foreach(c, cons_print_int);
+	// print each element in the tree using pre-order traversal
+	cons_pre_order(c, cons_print_int);
 	cons_free(c);
 }
