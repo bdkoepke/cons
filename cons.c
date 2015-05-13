@@ -57,22 +57,17 @@ bool cons_is_tuple(const Cons *self) {
 	return self->type == ETuple;
 }
 
-void cons_pre_order(const Cons *self, cons_apply a) {
+void cons_post_order(const Cons *self, cons_apply a) {
   if (cons_is_leaf(self)) {
 		a(self);
 		return;
 	}
 	assert (cons_is_tuple(self));
-	// less claen that it could be so we can do 
-	// destructive updates to the self pointer.
-	// save the left and right nodes here.
-	const Cons *left = cons_get_left(self);
-	const Cons *right = cons_get_right(self);
+	cons_post_order(cons_get_left(self), a);
+	cons_post_order(cons_get_right(self), a);
 	a(self);
-	cons_pre_order(left, a);
-	cons_pre_order(right, a);
 }
 
 void cons_free(Cons *self) {
-	cons_pre_order(self, (cons_apply)free);
+	cons_post_order(self, (cons_apply)free);
 }

@@ -22,6 +22,6 @@ int main() {
 			cons_new_leaf(void_cast(&n[3]))));
 
 	// print each element in the tree using pre-order traversal
-	cons_pre_order(c, cons_print_int);
+	cons_post_order(c, cons_print_int);
 	cons_free(c);
 }
