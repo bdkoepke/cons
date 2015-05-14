@@ -1,4 +1,5 @@
 #include "cons.h"
+#include "unsafe.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -57,17 +58,24 @@ bool cons_is_tuple(const Cons *self) {
 	return self->type == ETuple;
 }
 
-void cons_post_order(const Cons *self, cons_apply a) {
+void cons_post_order(const Cons *self, Closure *c) {
   if (cons_is_leaf(self)) {
-		a(self);
+		closure_apply(c, void_cast(self));
 		return;
 	}
 	assert (cons_is_tuple(self));
-	cons_post_order(cons_get_left(self), a);
-	cons_post_order(cons_get_right(self), a);
-	a(self);
+	cons_post_order(cons_get_left(self), c);
+	cons_post_order(cons_get_right(self), c);
+	closure_apply(c, void_cast(self));
+}
+
+static void *_cons_free(Closure *self, void *args) {
+	Cons *c = (Cons *)args;
+	free(c);
+	return NULL;
 }
 
 void cons_free(Cons *self) {
-	cons_post_order(self, (cons_apply)free);
+	Closure free_closure = { .apply = _cons_free };
+	cons_post_order(self, &free_closure);
 }

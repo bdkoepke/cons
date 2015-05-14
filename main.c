@@ -4,9 +4,11 @@
 #include <assert.h>
 #include <stdio.h>
 
-void cons_print_int(const Cons *self) {
-	if (cons_is_leaf(self))
-		printf("%d\n", *(int *)cons_get_value(self));
+static void *cons_print_int(Closure *self, void *args) {
+	const Cons *c = (const Cons *)args;
+	if (cons_is_leaf(c))
+		printf("%d\n", *(int *)cons_get_value(c));
+	return NULL;
 }
 
 int main() {
@@ -21,7 +23,8 @@ int main() {
 			cons_new_leaf(void_cast(&n[2])),
 			cons_new_leaf(void_cast(&n[3]))));
 
-	// print each element in the tree using pre-order traversal
-	cons_post_order(c, cons_print_int);
+	// print each element in the tree using post-order traversal
+	Closure cons_print_closure = { .apply = cons_print_int };
+	cons_post_order(c, &cons_print_closure);
 	cons_free(c);
 }
