@@ -12,22 +12,16 @@ typedef struct {
 struct _Cons {
 	enum { ETuple, ELeaf } type;
 	union {
-		Tuple *tuple;
+		Tuple tuple;
 		void *leaf;
 	};
 };
 
 Cons *cons_new_tuple(const Cons *left, const Cons *right) {
 	Cons *c = malloc(sizeof(Cons));
-	{
-		c->type = ETuple;
-		c->tuple = malloc(sizeof(Tuple));
-	}
-	Tuple *t = c->tuple;
-	{
-		t->left = left;
-		t->right = right;
-	}
+	c->type = ETuple;
+	c->tuple.left = left;
+	c->tuple.right = right;
 	return c;
 }
 
@@ -43,11 +37,11 @@ void *cons_get_value(const Cons *self) {
 }
 
 const Cons *cons_get_left(const Cons *self) {
-	return cons_is_tuple(self) ? self->tuple->left : NULL;
+	return cons_is_tuple(self) ? self->tuple.left : NULL;
 }
 
 const Cons *cons_get_right(const Cons *self) {
-	return cons_is_tuple(self) ? self->tuple->right : NULL;
+	return cons_is_tuple(self) ? self->tuple.right : NULL;
 }
 
 bool cons_is_leaf(const Cons *self) {
@@ -70,8 +64,7 @@ void cons_post_order(const Cons *self, Closure *c) {
 }
 
 static void *_cons_free(Closure *self, void *args) {
-	Cons *c = (Cons *)args;
-	free(c);
+	free(args);
 	return NULL;
 }
 
