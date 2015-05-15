@@ -49,14 +49,18 @@ bool cons_is_leaf(const Cons *self) { return self->type == ELeaf; }
 bool cons_is_tuple(const Cons *self) { return self->type == ETuple; }
 
 void cons_post_order(const Cons *self, Closure *c) {
-  if (cons_is_leaf(self)) {
+  switch (self->type) {
+  case ELeaf:
     closure_apply(c, void_cast(self));
-    return;
+    break;
+  case ETuple:
+    cons_post_order(cons_get_left(self), c);
+    cons_post_order(cons_get_right(self), c);
+    closure_apply(c, void_cast(self));
+    break;
+  default:
+    assert(false);
   }
-  assert(cons_is_tuple(self));
-  cons_post_order(cons_get_left(self), c);
-  cons_post_order(cons_get_right(self), c);
-  closure_apply(c, void_cast(self));
 }
 
 static void *_cons_free(Closure *self, void *args) {
